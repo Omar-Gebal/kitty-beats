@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:kitty_beats/src/presentation/mobx/home_screen_store.dart';
 import 'package:kitty_beats/src/utils/helper_functions.dart';
 import 'package:path_provider/path_provider.dart';
@@ -8,13 +7,21 @@ import 'package:just_audio/just_audio.dart';
 
 class HomeScreenController {
   const HomeScreenController();
-  void playAudio() async {
-    final player = AudioPlayer();
+
+  Future<List<String>> returnDownloadedMusic() async {
     var dataDirectory = await getExternalStorageDirectory();
+    List<String> downloadedMusic = [];
     await for (var entity
         in dataDirectory!.list(recursive: true, followLinks: false)) {
       print(entity.path);
+      downloadedMusic.add(entity.path);
     }
+    return downloadedMusic;
+  }
+
+  void playAudio() async {
+    final player = AudioPlayer();
+    var dataDirectory = await getExternalStorageDirectory();
     var songDirectory = '${dataDirectory!.path}/top.mp3';
     //print(songDirectory);
     await player.setAudioSource(AudioSource.file(songDirectory));

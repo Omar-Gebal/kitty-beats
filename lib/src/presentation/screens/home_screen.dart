@@ -12,23 +12,46 @@ class HomeScreen extends StatelessWidget {
     final HomeScreenStore state = HomeScreenStore();
     return Scaffold(
       body: SafeArea(
-        child: Column(children: [
-          TextField(
-            onChanged: (value) => state.url = value,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          child: Column(
+            children: [
+              TextField(
+                decoration: const InputDecoration(
+                    hintText: 'Youtube video url',
+                    border: OutlineInputBorder()),
+                onChanged: (value) => state.url = value,
+              ),
+              TextButton(
+                onPressed: () async {
+                  controller.downloadAudio(state);
+                },
+                child: const Text('download audio'),
+              ),
+              FutureBuilder(
+                future: controller.returnDownloadedMusic(),
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  if (snapshot.hasData) {
+                    List<String> downloadedMusic = snapshot.data;
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: downloadedMusic.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return ListTile(
+                          title: Text(downloadedMusic[index]),
+                        );
+                      },
+                    );
+                  } else if (snapshot.hasError) {
+                    return Text('error retrieving songs');
+                  } else {
+                    return Text('loading');
+                  }
+                },
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () {
-              controller.downloadAudio(state);
-            },
-            child: Text('download audio'),
-          ),
-          TextButton(
-            onPressed: () {
-              controller.playAudio();
-            },
-            child: Text('play audio'),
-          )
-        ]),
+        ),
       ),
     );
   }
