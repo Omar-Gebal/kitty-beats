@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'package:kitty_beats/src/presentation/mobx/home_screen_store.dart';
+import 'package:kitty_beats/src/utils/helper_functions.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
@@ -8,25 +11,33 @@ class HomeScreenController {
   void playAudio() async {
     final player = AudioPlayer();
     var dataDirectory = await getExternalStorageDirectory();
+    await for (var entity
+        in dataDirectory!.list(recursive: true, followLinks: false)) {
+      print(entity.path);
+    }
     var songDirectory = '${dataDirectory!.path}/top.mp3';
-    print(songDirectory);
+    //print(songDirectory);
     await player.setAudioSource(AudioSource.file(songDirectory));
-    player.play();
+    //player.play();
   }
 
-  void downloadAudio() async {
+  void downloadAudio(HomeScreenStore state) async {
+    //validates that the url is a valid youtube link
+    if (extractVideoId(state.url) == null) {
+      state.isValidUrl = false;
+      return;
+    }
+
     var youtube = YoutubeExplode();
-    var video = await youtube.videos.get('https://youtu.be/pXRviuL6vMY');
+    var video = await youtube.videos.get(state.url);
     var title = video.title;
-    var manifest =
-        await youtube.videos.streamsClient.getManifest('pXRviuL6vMY');
+    var manifest = await youtube.videos.streamsClient
+        .getManifest(extractVideoId(state.url));
     var streamInfo = manifest.audioOnly.withHighestBitrate();
     var audioUri = streamInfo.url;
-    print(audioUri.toString());
 
     ///TODO: make this work for ios
     var directory = await getExternalStorageDirectory();
-    print(directory);
     final taskId = await FlutterDownloader.enqueue(
       url: audioUri.toString(),
       fileName: "$title.mp3",
@@ -37,6 +48,7 @@ class HomeScreenController {
       openFileFromNotification:
           true, // click on notification to open downloaded file (for Android)
     );
+
     youtube.close();
   }
 }
