@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:kitty_beats/src/presentation/controllers/home_screen_controller.dart';
 import 'package:kitty_beats/src/presentation/mobx/home_screen_store.dart';
+import 'package:kitty_beats/src/presentation/widgets/audio_item.dart';
 
 class HomeScreen extends StatelessWidget {
   final HomeScreenController controller;
@@ -23,10 +24,14 @@ class HomeScreen extends StatelessWidget {
                 onChanged: (value) => state.url = value,
               ),
               TextButton(
-                onPressed: () async {
+                onPressed: () {
                   controller.downloadAudio(state);
                 },
                 child: const Text('download audio'),
+              ),
+              TextButton(
+                onPressed: () {},
+                child: const Text('Test Button'),
               ),
               FutureBuilder(
                 future: controller.returnDownloadedMusic(),
@@ -37,9 +42,8 @@ class HomeScreen extends StatelessWidget {
                       shrinkWrap: true,
                       itemCount: downloadedMusic.length,
                       itemBuilder: (BuildContext context, int index) {
-                        return ListTile(
-                          title: Text(downloadedMusic[index]),
-                        );
+                        return AudioItem(
+                            path: snapshot.data[index], controller: controller);
                       },
                     );
                   } else if (snapshot.hasError) {

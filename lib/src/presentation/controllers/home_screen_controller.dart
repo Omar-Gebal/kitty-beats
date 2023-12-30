@@ -19,13 +19,10 @@ class HomeScreenController {
     return downloadedMusic;
   }
 
-  void playAudio() async {
+  void playAudio(String songPath) async {
     final player = AudioPlayer();
-    var dataDirectory = await getExternalStorageDirectory();
-    var songDirectory = '${dataDirectory!.path}/top.mp3';
-    //print(songDirectory);
-    await player.setAudioSource(AudioSource.file(songDirectory));
-    //player.play();
+    await player.setAudioSource(AudioSource.file(songPath));
+    player.play();
   }
 
   void downloadAudio(HomeScreenStore state) async {
