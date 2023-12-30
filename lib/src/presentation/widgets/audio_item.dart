@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kitty_beats/src/core/config.dart';
 import 'package:kitty_beats/src/presentation/controllers/home_screen_controller.dart';
 
 class AudioItem extends StatelessWidget {
@@ -8,7 +9,8 @@ class AudioItem extends StatelessWidget {
 
   String extractTitleFromPath(String path) {
     final String fileNameAndFormat = path.split('/').last;
-    final fileName = fileNameAndFormat.split('.').first;
+    final fileName = fileNameAndFormat.substring(
+        0, fileNameAndFormat.length - AUDIOFORMAT.length);
     return fileName;
   }
 

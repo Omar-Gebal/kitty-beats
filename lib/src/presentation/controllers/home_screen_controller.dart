@@ -1,3 +1,5 @@
+import 'package:just_audio_background/just_audio_background.dart';
+import 'package:kitty_beats/src/core/config.dart';
 import 'package:kitty_beats/src/presentation/mobx/home_screen_store.dart';
 import 'package:kitty_beats/src/utils/helper_functions.dart';
 import 'package:path_provider/path_provider.dart';
@@ -21,7 +23,19 @@ class HomeScreenController {
 
   void playAudio(String songPath) async {
     final player = AudioPlayer();
-    await player.setAudioSource(AudioSource.file(songPath));
+    await player.setAudioSource(
+      AudioSource.file(
+        songPath,
+        tag: MediaItem(
+          // Specify a unique ID for each media item:
+          id: '1',
+          // Metadata to display in the notification:
+          album: "Album name",
+          title: "Song name",
+          artUri: Uri.parse('https://example.com/albumart.jpg'),
+        ),
+      ),
+    );
     player.play();
   }
 
@@ -44,7 +58,7 @@ class HomeScreenController {
     var directory = await getExternalStorageDirectory();
     final taskId = await FlutterDownloader.enqueue(
       url: audioUri.toString(),
-      fileName: "$title.mp3",
+      fileName: "$title.$AUDIOFORMAT",
       headers: {}, // optional: header send with url (auth token etc)
       savedDir: directory!.absolute.path,
       showNotification:

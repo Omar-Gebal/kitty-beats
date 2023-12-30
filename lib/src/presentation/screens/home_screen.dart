@@ -43,7 +43,9 @@ class HomeScreen extends StatelessWidget {
                       itemCount: downloadedMusic.length,
                       itemBuilder: (BuildContext context, int index) {
                         return AudioItem(
-                            path: snapshot.data[index], controller: controller);
+                          path: snapshot.data[index],
+                          controller: controller,
+                        );
                       },
                     );
                   } else if (snapshot.hasError) {
